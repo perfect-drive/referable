@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace PerfectDrive\Referable\Controllers;
 
-use PerfectDrive\Referable\ReferableFinder\ReferableFinder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
+use PerfectDrive\Referable\ReferableFinder\ReferableFinder;
 
 class ReferableController
 {

@@ -2,10 +2,10 @@
 
 namespace PerfectDrive\Referable;
 
-use PerfectDrive\Referable\Controllers\ReferableController;
-use PerfectDrive\Referable\ReferableFinder\ReferableFinder;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
+use PerfectDrive\Referable\Controllers\ReferableController;
+use PerfectDrive\Referable\ReferableFinder\ReferableFinder;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
