@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace PerfectDrive\Referable\Traits;
 
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 trait ReferableModel
 {
     /**
      * @return Collection<int, non-empty-array<string, mixed>>
      */
-    public static function getReferenceCollection(): Collection
+    public static function getReferenceCollection(?string $scopeName = null): Collection
     {
         if (self::getReferenceValue() === null) {
             return collect();
@@ -19,12 +20,17 @@ trait ReferableModel
 
         $model = self::getModel();
 
-        return $model->orderBy('name')
+        if ($scopeName && ! $model->hasMethod('scope').Str::studly($scopeName)) {
+            $scopeName = null;
+        }
+
+        return $model->orderBy(self::getReferenceTitle())
+            ->when($scopeName, fn ($query) => $query->{$scopeName}())
             ->get()
             ->map(fn ($model) => [
                 config('referable.key_name') => $model->{self::getReferenceValue()},
                 config('referable.value_name') => $model->{self::getReferenceTitle()},
-                ...self::getAdditionalReferenceAttributes(),
+                ...collect(self::getAdditionalReferenceAttributes())->mapWithKeys(fn ($value, $key) => [$key => $model->{$value}])
             ]);
     }
 
