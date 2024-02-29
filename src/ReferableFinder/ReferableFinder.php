@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace PerfectDrive\Referable\ReferableFinder;
 
-use PerfectDrive\Referable\Interfaces\ReferableInterface;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use PerfectDrive\Referable\Interfaces\ReferableInterface;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use ReflectionClass;

@@ -2,14 +2,13 @@
 
 namespace PerfectDrive\Referable;
 
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
 use PerfectDrive\Referable\Attributes\ReferableScope;
 use PerfectDrive\Referable\Controllers\ReferableController;
 use PerfectDrive\Referable\ReferableFinder\ReferableFinder;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Str;
 use ReflectionAttribute;
 use ReflectionClass;
-use ReflectionException;
 use ReflectionMethod;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
@@ -42,11 +41,10 @@ class ReferableServiceProvider extends PackageServiceProvider
                     $class = new ReflectionClass($class);
 
                     collect($class->getMethods())
-                        ->filter(fn(ReflectionMethod $method) =>
-                            collect($method->getAttributes())
-                                ->map(fn(ReflectionAttribute $attribute) => $attribute->getName())
-                                ->contains(ReferableScope::class),
-                            )
+                        ->filter(fn (ReflectionMethod $method) => collect($method->getAttributes())
+                            ->map(fn (ReflectionAttribute $attribute) => $attribute->getName())
+                            ->contains(ReferableScope::class),
+                        )
                         ->each(function ($method) use ($route) {
                             $scopeRoute = Str::snake(Str::after($method->getName(), 'scope'));
                             Route::get(config('referable.base_url').$route.'/'.$scopeRoute, ReferableController::class);

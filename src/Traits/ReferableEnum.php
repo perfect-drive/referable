@@ -25,12 +25,13 @@ trait ReferableEnum
         return collect(self::cases())
             ->when($scopeName, function (Collection $collection, string $scopeName) {
                 $scopeName = Str::camel($scopeName);
+
                 return $collection->filter(fn ($case) => (bool) $case->{$scopeName}());
             })
             ->map(fn ($case) => [
                 config('referable.key_name') => $case->{self::getReferenceValue()},
                 config('referable.value_name') => $case->{self::getReferenceTitle()}(),
-                ...collect(self::getAdditionalReferenceAttributes())->mapWithKeys(fn ($value, $key) => [$key => $case->{$value}()])
+                ...collect(self::getAdditionalReferenceAttributes())->mapWithKeys(fn ($value, $key) => [$key => $case->{$value}()]),
             ]);
     }
 

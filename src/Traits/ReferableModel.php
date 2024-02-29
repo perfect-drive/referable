@@ -30,7 +30,7 @@ trait ReferableModel
             ->map(fn ($model) => [
                 config('referable.key_name') => $model->{self::getReferenceValue()},
                 config('referable.value_name') => $model->{self::getReferenceTitle()},
-                ...collect(self::getAdditionalReferenceAttributes())->mapWithKeys(fn ($value, $key) => [$key => $model->{$value}])
+                ...collect(self::getAdditionalReferenceAttributes())->mapWithKeys(fn ($value, $key) => [$key => $model->{$value}]),
             ]);
     }
 

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace PerfectDrive\Referable\Controllers;
 
-use PerfectDrive\Referable\ReferableFinder\ReferableFinder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
+use PerfectDrive\Referable\ReferableFinder\ReferableFinder;
 
 class ReferableController
 {
@@ -16,16 +16,16 @@ class ReferableController
         $referable = Str::after((string) Route::current()?->uri(), config('referable.base_url'));
 
         $className = Str::of($referable)->before('/')->studly()->toString();
-        $scopeName = Str::contains($referable, "/")
+        $scopeName = Str::contains($referable, '/')
             ? Str::of($referable)
-                ->after("/")
+                ->after('/')
                 ->camel()
                 ->toString()
             : null;
 
         $referable = $this->findReferable($className);
 
-        if (!$referable || ! method_exists($referable, 'getReferenceCollection')) {
+        if (! $referable || ! method_exists($referable, 'getReferenceCollection')) {
             return response()->json();
         }
 
