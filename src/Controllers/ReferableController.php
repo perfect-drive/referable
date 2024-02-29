@@ -13,23 +13,28 @@ class ReferableController
 {
     public function __invoke(): JsonResponse
     {
-        $className = Str::of((string) Route::current()?->uri())
-            ->after('spa/referable/')
-            ->studly()
-            ->toString();
+        $referable = Str::after((string) Route::current()?->uri(), config('referable.base_url'));
 
-        $referencable = $this->findReferencable($className);
+        $className = Str::of($referable)->before('/')->studly()->toString();
+        $scopeName = Str::contains($referable, '/')
+            ? Str::of($referable)
+                ->after('/')
+                ->camel()
+                ->toString()
+            : null;
 
-        if ($referencable && method_exists($referencable, 'getReferenceCollection')) {
-            return response()->json(
-                $referencable::getReferenceCollection()
-            );
+        $referable = $this->findReferable($className);
+
+        if (! $referable || ! method_exists($referable, 'getReferenceCollection')) {
+            return response()->json();
         }
 
-        return response()->json([]);
+        return response()->json(
+            $referable::getReferenceCollection($scopeName)
+        );
     }
 
-    private function findReferencable(string $className): ?string
+    private function findReferable(string $className): ?string
     {
         return ReferableFinder::all()
             ->first(fn ($class) => class_basename($class) === $className);
