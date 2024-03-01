@@ -5,7 +5,7 @@
 [![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/perfect-drive/referable/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/perfect-drive/referable/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/perfect-drive/referable.svg?style=flat-square)](https://packagist.org/packages/perfect-drive/referable)
 
-To populate drowdowns (or other ways of reference) in an SPA form a separate endpoint can be used to create the array of name/value pairs. This package allows you to automatically create routes for your Models and Enums to make them referable in your SPA frontend. 
+To populate drowdowns (or other ways of reference) in an SPA form a separate endpoint can be used to create the array of name/value pairs. This package allows you to automatically create routes for your Models and Enums to make them referable in your Laravel backed SPA frontend. 
 
 ## Installation
 
@@ -25,6 +25,11 @@ This is the contents of the published config file:
 
 ```php
 return [
+    'key_name' => 'value',
+
+    'value_name' => 'title',
+
+    'base_url' => 'spa/referable/',
 ];
 ```
 
@@ -84,7 +89,6 @@ Please review [our security policy](../../security/policy) on how to report secu
 ## Credits
 
 - [Carl Klein](https://github.com/perfect-drive)
-- [All Contributors](../../contributors)
 
 ## License
 
