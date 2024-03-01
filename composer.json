@@ -1,7 +1,6 @@
 {
     "name": "perfect-drive/referable",
-    "description": "Automatically create routes for Models and Enums to make them referable in your SPA frontend",
-    "version": "1.0.0",
+    "description": "Automatically create routes for Models and Enums to make them referable in your Laravel backed SPA frontend",
     "keywords": [
         "Perfect Drive",
         "laravel",
