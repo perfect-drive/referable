@@ -10,6 +10,7 @@ use PerfectDrive\Referable\ReferableFinder\ReferableFinder;
 use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionMethod;
+use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -19,7 +20,11 @@ class ReferableServiceProvider extends PackageServiceProvider
     {
         $package
             ->name('referable')
-            ->hasConfigFile();
+            ->hasConfigFile()
+            ->hasInstallCommand(function(InstallCommand $command) {
+                $command
+                    ->publishConfigFile();
+            });
     }
 
     public function boot(): void
@@ -30,6 +35,7 @@ class ReferableServiceProvider extends PackageServiceProvider
     protected function registerRoutes(): void
     {
         $middleware = config('referable.middleware');
+
         if (! is_array($middleware)) {
             $middleware = null;
         }
