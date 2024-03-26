@@ -20,11 +20,7 @@ class ReferableServiceProvider extends PackageServiceProvider
     {
         $package
             ->name('referable')
-            ->hasConfigFile()
-            ->hasInstallCommand(function (InstallCommand $command) {
-                $command
-                    ->publishConfigFile();
-            });
+            ->hasConfigFile();
     }
 
     public function bootingPackage(): void
