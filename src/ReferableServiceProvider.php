@@ -27,7 +27,7 @@ class ReferableServiceProvider extends PackageServiceProvider
             });
     }
 
-    public function boot(): void
+    public function bootingPackage(): void
     {
         $this->registerRoutes();
     }
