@@ -13,7 +13,13 @@ class ReferableController
 {
     public function __invoke(): JsonResponse
     {
-        $referable = Str::after((string) Route::current()?->uri(), config('referable.base_url'));
+        $baseUrl = config('referable.base_url', '/spa/referable/');
+
+        if (! is_string($baseUrl)) {
+            $baseUrl = '/spa/referable/';
+        }
+
+        $referable = Str::after((string) Route::current()?->uri(), $baseUrl);
 
         $className = Str::of($referable)->before('/')->studly()->toString();
         $scopeName = Str::contains($referable, '/')

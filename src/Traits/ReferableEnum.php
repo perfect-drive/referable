@@ -14,7 +14,7 @@ trait ReferableEnum
      */
     public static function getReferenceCollection(?string $scopeName = null): Collection
     {
-        if (self::getReferenceValue() === null) {
+        if (self::getReferenceKey() === null) {
             return collect();
         }
 
@@ -28,21 +28,28 @@ trait ReferableEnum
 
                 return $collection->filter(fn ($case) => (bool) $case->{$scopeName}());
             })
+            ->sortBy(fn ($case) => self::getReferenceSortBy() === 'value' ? $case->value : $case->{self::getReferenceSortBy()}())
             ->map(fn ($case) => [
-                config('referable.key_name') => $case->{self::getReferenceValue()},
-                config('referable.value_name') => $case->{self::getReferenceTitle()}(),
+                config('referable.key_name') => self::getReferenceKey() === 'value' ? $case->value : $case->{self::getReferenceKey()}(),
+                config('referable.value_name') => $case->{self::getReferenceValue()}(),
                 ...collect(self::getAdditionalReferenceAttributes())->mapWithKeys(fn ($value, $key) => [$key => $case->{$value}()]),
-            ]);
+            ])
+            ->values();
     }
 
-    public static function getReferenceValue(): ?string
+    public static function getReferenceKey(): ?string
     {
         return 'value';
     }
 
-    public static function getReferenceTitle(): string
+    public static function getReferenceValue(): string
     {
         return 'name';
+    }
+
+    public static function getReferenceSortBy(): string
+    {
+        return self::getReferenceKey();
     }
 
     /**

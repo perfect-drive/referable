@@ -13,9 +13,11 @@ interface ReferableInterface
      */
     public static function getReferenceCollection(): Collection;
 
-    public static function getReferenceValue(): ?string;
+    public static function getReferenceKey(): ?string;
 
-    public static function getReferenceTitle(): string;
+    public static function getReferenceValue(): string;
+
+    public static function getReferenceSortBy(): string;
 
     /**
      * @return array<string, string>

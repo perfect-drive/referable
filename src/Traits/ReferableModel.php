@@ -14,34 +14,41 @@ trait ReferableModel
      */
     public static function getReferenceCollection(?string $scopeName = null): Collection
     {
-        if (self::getReferenceValue() === null) {
+        if (self::getReferenceKey() === null) {
             return collect();
+        }
+
+        if ($scopeName && ! method_exists(self::class, 'scope'.Str::studly($scopeName))) {
+            $scopeName = null;
         }
 
         $model = self::getModel();
 
-        if ($scopeName && ! $model->hasMethod('scope').Str::studly($scopeName)) {
-            $scopeName = null;
-        }
-
-        return $model->orderBy(self::getReferenceTitle())
+        return $model
+            ->orderBy(self::getReferenceSortBy())
             ->when($scopeName, fn ($query) => $query->{$scopeName}())
             ->get()
             ->map(fn ($model) => [
-                config('referable.key_name') => $model->{self::getReferenceValue()},
-                config('referable.value_name') => $model->{self::getReferenceTitle()},
+                config('referable.key_name') => $model->{self::getReferenceKey()},
+                config('referable.value_name') => $model->{self::getReferenceValue()},
                 ...collect(self::getAdditionalReferenceAttributes())->mapWithKeys(fn ($value, $key) => [$key => $model->{$value}]),
-            ]);
+            ])
+            ->values();
     }
 
-    public static function getReferenceValue(): ?string
+    public static function getReferenceKey(): ?string
     {
         return self::getModel()->getKeyName();
     }
 
-    public static function getReferenceTitle(): string
+    public static function getReferenceValue(): string
     {
         return 'name';
+    }
+
+    public static function getReferenceSortBy(): string
+    {
+        return self::getReferenceKey();
     }
 
     /**
