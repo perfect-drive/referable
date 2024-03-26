@@ -13,25 +13,38 @@ use ReflectionClass;
 use SplFileInfo;
 
 /**
- * This class is based on the ModelFinder class from the Spatie package laravel-model-info
+ * This class is based on the ModelFinder class from the Spatie package: laravel-model-info
  *
  * @copyright Spatie: https://github.com/spatie/laravel-model-info
  */
 class ReferableFinder
 {
     /**
+     * @param  array<int, string>|null  $directories
      * @return Collection<int, class-string<object>>
      */
     public static function all(
-        ?string $directory = null,
+        ?array $directories = null,
         ?string $basePath = null,
         ?string $baseNamespace = null,
     ): Collection {
-        $directory ??= app_path();
-        $basePath ??= base_path();
-        $baseNamespace ??= '';
+        $directories ??= config('referable.directories', [app_path()]);
+        $basePath ??= config('referable.base_path', base_path());
+        $baseNamespace ??= config('referable.base_namespace', '');
 
-        return collect(static::getFilesRecursively($directory))
+        if (! is_array($directories)) {
+            $directories = [app_path()];
+        }
+
+        if (! is_string($basePath)) {
+            $basePath = base_path();
+        }
+
+        if (! is_string($baseNamespace)) {
+            $baseNamespace = '';
+        }
+
+        return collect(static::getFilesRecursively($directories))
             ->map(fn (string $class) => new SplFileInfo($class))
             ->map(fn (SplFileInfo $file) => self::fullQualifiedClassNameFromFile($file, $basePath, $baseNamespace))
             ->map(function (string $class) {
@@ -67,18 +80,27 @@ class ReferableFinder
     }
 
     /**
+     * @param  array<int, string>  $paths
      * @return array<int, string>
      */
-    protected static function getFilesRecursively(string $path): array
+    protected static function getFilesRecursively(array $paths): array
     {
-        $rii = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path));
         $files = [];
 
-        foreach ($rii as $file) {
-            if ($file->isDir()) {
+        foreach ($paths as $path) {
+            if (! is_dir($path)) {
                 continue;
             }
-            $files[] = $file->getPathname();
+
+            $rii = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path));
+
+            foreach ($rii as $file) {
+                if (! $file instanceof SplFileInfo || $file->isDir()) {
+                    continue;
+                }
+
+                $files[] = $file->getPathname();
+            }
         }
 
         return $files;

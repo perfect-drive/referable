@@ -29,25 +29,34 @@ class ReferableServiceProvider extends PackageServiceProvider
 
     protected function registerRoutes(): void
     {
+        $middleware = config('referable.middleware');
+        if (! is_array($middleware)) {
+            $middleware = null;
+        }
+
         // Register a 'referable' route for each referable model and enum (class implementing ReferableInterface)
+        // and each referable scope within these models and enums
         collect(ReferableFinder::all())
-            ->each(function ($class) {
-                if (is_string($class)) {
+            ->each(function ($className) use ($middleware) {
+                if (is_string($className)) {
                     // Register the base route
-                    $route = Str::snake(class_basename($class));
-                    Route::get(config('referable.base_url').$route, ReferableController::class);
+                    $route = Str::snake(class_basename($className));
+                    Route::get(config('referable.base_url').$route, ReferableController::class)
+                        ->middleware($middleware);
 
                     // Register a route for each referable scope
-                    $class = new ReflectionClass($class);
+                    /** @var class-string $className */
+                    $class = new ReflectionClass($className);
 
                     collect($class->getMethods())
                         ->filter(fn (ReflectionMethod $method) => collect($method->getAttributes())
                             ->map(fn (ReflectionAttribute $attribute) => $attribute->getName())
                             ->contains(ReferableScope::class),
                         )
-                        ->each(function ($method) use ($route) {
+                        ->each(function ($method) use ($route, $middleware) {
                             $scopeRoute = Str::snake(Str::after($method->getName(), 'scope'));
-                            Route::get(config('referable.base_url').$route.'/'.$scopeRoute, ReferableController::class);
+                            Route::get(config('referable.base_url').$route.'/'.$scopeRoute, ReferableController::class)
+                                ->middleware($middleware);
                         });
                 }
             });
