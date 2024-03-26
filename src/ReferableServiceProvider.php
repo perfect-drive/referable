@@ -10,7 +10,6 @@ use PerfectDrive\Referable\ReferableFinder\ReferableFinder;
 use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionMethod;
-use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
