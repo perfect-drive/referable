@@ -12,7 +12,7 @@ return [
     /*
      * The middleware array to use for the Referable routes.
      */
-    'middleware' => null,
+    'middleware' => ['api', 'auth:sanctum'],
 
     /*
      * The key name to use for the referable key in the json response.

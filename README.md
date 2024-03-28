@@ -25,17 +25,39 @@ This is the contents of the published config file:
 
 ```php
 return [
+    /*
+     * The directories to search for Referable classes.
+     */
+    'directories' => [
+        app_path('Enums'),
+        app_path('Models'),
+    ],
+
+    /*
+     * The middleware array to use for the Referable routes.
+     */
+    'middleware' => ['api', 'auth:sanctum'],
+
+    /*
+     * The key name to use for the referable key in the json response.
+     */
     'key_name' => 'value',
 
+    /*
+     * The value name to use for the referable value in the json response.
+     */
     'value_name' => 'title',
 
+    /*
+     * The base url for the referable routes.
+     */
     'base_url' => 'spa/referable/',
 ];
 ```
 
 ## Usage
 
-On a Model:
+### On a Model:
 ```php
 <?php
 
@@ -52,7 +74,12 @@ class ProjectType extends Model implements ReferableInterface
     use ReferableModel;
 ```
 
-On an Enum:
+This will register the following route:
+```
+GET /spa/referable/project_type
+```
+
+### On an Enum:
 ```php
 <?php
 
@@ -67,6 +94,38 @@ enum UserStatus: string implements ReferableInterface
 {
     use ReferableEnum;
 ```
+This will register the following route:
+```
+GET /spa/referable/user_status
+```
+
+### Model Scopes
+The 'ReferableScope' attribute can be used to define a custom scope (on a Model) to filter the referable items and create an additional route for it.
+
+```
+#[ReferableScope]
+public function scopeActive(Builder $query): Builder
+{
+    return $query->where('active', true);
+}
+```
+This will register the following route:
+```
+GET /spa/referable/project_type/active
+```
+### Enum Scopes
+You can use the 'ReferableScope' attribute to define a custom scope method (on an Enum) to filter the referable items and create an additional route for it.
+
+```
+#[ReferableScope]
+public function active(): bool
+{
+    return in_array($this, [
+        self::FIRST,
+        self::SECOND,
+    ], true);
+}
+```
 
 ## Testing
 
@@ -78,13 +137,10 @@ composer test
 
 Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
 
-## Contributing
-
-Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
 
 ## Security Vulnerabilities
 
-Please review [our security policy](../../security/policy) on how to report security vulnerabilities.
+If you discover any security related issues, please email [carl.klein@perfect-drive.nl](mailto:carl.klein@perfect-drive.nl).
 
 ## Credits
 
