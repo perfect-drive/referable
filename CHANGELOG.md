@@ -2,6 +2,10 @@
 
 All notable changes to `referable` will be documented in this file.
 
+## 1.2 - 2024-06-14
+
+Laravel 11 support
+
 ## 1.1.0
 
 - Added scoping for Enums
