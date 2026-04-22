@@ -2,6 +2,12 @@
 
 All notable changes to `referable` will be documented in this file.
 
+## 2.0.0 - 2026-04-22
+
+- Laravel 13 support
+- Dropped support for Laravel 10 and Laravel 11
+- Dropped support for PHP 8.2 (minimum PHP version is now 8.3)
+
 ## 1.3 - 2025-03-03
 
 Laravel 12 support
