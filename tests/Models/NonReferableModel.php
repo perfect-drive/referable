@@ -11,6 +11,4 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $name
  * @property bool $active
  */
-class NonReferableModel extends Model
-{
-}
+class NonReferableModel extends Model {}

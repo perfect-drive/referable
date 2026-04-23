@@ -35,31 +35,35 @@ class ReferableServiceProvider extends PackageServiceProvider
             $middleware = null;
         }
 
+        /** @var array<string>|null $middleware */
+        $baseUrl = config('referable.base_url', 'spa/referable/');
+
+        if (! is_string($baseUrl)) {
+            $baseUrl = 'spa/referable/';
+        }
+
         // Register a 'referable' route for each referable model and enum (class implementing ReferableInterface)
         // and each referable scope within these models and enums
         collect(ReferableFinder::all())
-            ->each(function ($className) use ($middleware) {
-                if (is_string($className)) {
-                    // Register the base route
-                    $route = Str::snake(class_basename($className));
-                    Route::get(config('referable.base_url').$route, ReferableController::class)
-                        ->middleware($middleware);
+            ->each(function ($className) use ($middleware, $baseUrl) {
+                // Register the base route
+                $route = Str::snake(class_basename($className));
+                Route::get($baseUrl.$route, ReferableController::class)
+                    ->middleware($middleware);
 
-                    // Register a route for each referable scope
-                    /** @var class-string $className */
-                    $class = new ReflectionClass($className);
+                // Register a route for each referable scope
+                $class = new ReflectionClass($className);
 
-                    collect($class->getMethods())
-                        ->filter(fn (ReflectionMethod $method) => collect($method->getAttributes())
-                            ->map(fn (ReflectionAttribute $attribute) => $attribute->getName())
-                            ->contains(ReferableScope::class),
-                        )
-                        ->each(function ($method) use ($route, $middleware) {
-                            $scopeRoute = Str::snake(Str::after($method->getName(), 'scope'));
-                            Route::get(config('referable.base_url').$route.'/'.$scopeRoute, ReferableController::class)
-                                ->middleware($middleware);
-                        });
-                }
+                collect($class->getMethods())
+                    ->filter(fn (ReflectionMethod $method) => collect($method->getAttributes())
+                        ->map(fn (ReflectionAttribute $attribute) => $attribute->getName())
+                        ->contains(ReferableScope::class),
+                    )
+                    ->each(function ($method) use ($route, $middleware, $baseUrl) {
+                        $scopeRoute = Str::snake(Str::after($method->getName(), 'scope'));
+                        Route::get($baseUrl.$route.'/'.$scopeRoute, ReferableController::class)
+                            ->middleware($middleware);
+                    });
             });
     }
 }

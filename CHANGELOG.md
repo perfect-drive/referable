@@ -2,6 +2,12 @@
 
 All notable changes to `referable` will be documented in this file.
 
+## 2.0.1 - 2026-04-23
+
+- Fixed CI workflows (pint auto-commit and PHPStan PHP version)
+- Applied pint code style fixes
+- Narrowed types in `ReferableServiceProvider` and `ReferableFinder` to satisfy PHPStan 2
+
 ## 2.0.0 - 2026-04-22
 
 - Laravel 13 support

@@ -44,6 +44,7 @@ class ReferableFinder
             $baseNamespace = '';
         }
 
+        /** @var array<int, string> $directories */
         return collect(static::getFilesRecursively($directories))
             ->map(fn (string $class) => new SplFileInfo($class))
             ->map(fn (SplFileInfo $file) => self::fullQualifiedClassNameFromFile($file, $basePath, $baseNamespace))
