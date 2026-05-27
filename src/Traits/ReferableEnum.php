@@ -42,9 +42,33 @@ trait ReferableEnum
         return 'value';
     }
 
+    /**
+     * Method called on each case to produce the human-readable value.
+     *
+     * `name()` takes precedence whenever it is defined, so every enum that
+     * works as referable today keeps its current behaviour — this default is
+     * strictly backwards-compatible. Enums that expose no `name()` method
+     * auto-detect `label()` (the Laravel-ecosystem convention used by
+     * Filament / Nova) so they work without a per-enum override. Override
+     * this method to pin one explicitly, e.g. to move an existing `name()`
+     * enum to `label()` during a migration.
+     *
+     * This is the only `getReference*()` default that auto-detects;
+     * `getReferenceKey()`, `getReferenceSortBy()` and
+     * `getAdditionalReferenceAttributes()` assume the method they reference
+     * exists. The asymmetry is intentional: `value` is the most common
+     * override, and `label`-vs-`name` is the only place where a built-in
+     * PHP-enum property (`name`) collides with a downstream convention.
+     *
+     * Note: `method_exists()` returns `false` for methods exposed via
+     * `__call()`. An enum that provides `name()` only via `__call` will
+     * resolve to `label()` (or the final `name` fallback). If you need that
+     * pattern, override this method explicitly.
+     */
     public static function getReferenceValue(): string
     {
-        return 'name';
+        return method_exists(static::class, 'name') ? 'name'
+             : (method_exists(static::class, 'label') ? 'label' : 'name');
     }
 
     public static function getReferenceSortBy(): string

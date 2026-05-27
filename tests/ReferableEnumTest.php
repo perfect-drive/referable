@@ -79,6 +79,44 @@ it('returns a json response for a referable enum scope method', function () {
     ]);
 });
 
+it('prefers name() over label() when an enum defines both', function () {
+    // Pin the precedence decision: when an enum defines BOTH name() and
+    // label(), name() wins. This keeps the default strictly backwards-
+    // compatible — enums that already work via name() never silently flip to
+    // label(). A future "fix" that reverses this should fail this test loudly.
+    $response = $this->get('spa/referable/fully_defined_referable_enum');
+
+    $response->assertJson([
+        ['value' => 1, 'title' => 'NAME_ONE'],
+        ['value' => 2, 'title' => 'NAME_TWO'],
+    ]);
+
+    $response->assertJsonMissing(['title' => 'Label One']);
+    $response->assertJsonMissing(['title' => 'Label Two']);
+});
+
+it('returns a json response for an enum that exposes label() instead of name()', function () {
+    // Auto-detect: when an enum defines `label()` but not `name()`, the trait
+    // should call $case->label() to populate the human-readable value. Keeps
+    // PHP's built-in `name` property unshadowed.
+    $response = $this->get('spa/referable/label_referable_enum');
+
+    $response->assertJson([
+        [
+            'value' => 1,
+            'title' => 'Alpha',
+        ],
+        [
+            'value' => 2,
+            'title' => 'Bravo',
+        ],
+        [
+            'value' => 3,
+            'title' => 'Charlie',
+        ],
+    ]);
+});
+
 it('returns the specified key, value, order and additional attributes', function () {
     config()->set('referable.key_name', 'key');
     config()->set('referable.value_name', 'name');

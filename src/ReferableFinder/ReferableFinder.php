@@ -49,11 +49,26 @@ class ReferableFinder
             ->map(fn (string $class) => new SplFileInfo($class))
             ->map(fn (SplFileInfo $file) => self::fullQualifiedClassNameFromFile($file, $basePath, $baseNamespace))
             ->map(function (string $class) {
-                if (! class_exists($class)) {
+                // One bad class file (syntax error, missing parent, autoload
+                // failure) must not bring down route registration for every
+                // other Referable in the project. Fail soft per class, but
+                // leave a breadcrumb so the next person debugging "why is my
+                // dropdown empty" has somewhere to look.
+                try {
+                    if (! class_exists($class)) {
+                        return null;
+                    }
+
+                    return new ReflectionClass($class);
+                } catch (\Throwable $e) {
+                    error_log(sprintf(
+                        '[perfect-drive/referable] Skipping %s during route discovery: %s',
+                        $class,
+                        $e->getMessage(),
+                    ));
+
                     return null;
                 }
-
-                return new ReflectionClass($class);
             })
             ->filter()
             ->filter(fn (ReflectionClass $class) => ! $class->isAbstract())
