@@ -100,16 +100,34 @@ GET /spa/referable/user_status
 ```
 
 ### Model Scopes
-The 'ReferableScope' attribute can be used to define a custom scope (on a Model) to filter the referable items and create an additional route for it.
+The 'ReferableScope' attribute can be used to mark a custom scope (on a Model) to filter the referable items and create an additional route for it.
 
-```
+Both the legacy `scopeActive` naming convention and Laravel's native `#[Scope]` attribute are supported.
+
+```php
+use PerfectDrive\Referable\Attributes\ReferableScope;
+
+// Legacy naming convention
 #[ReferableScope]
 public function scopeActive(Builder $query): Builder
 {
     return $query->where('active', true);
 }
 ```
-This will register the following route:
+
+```php
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use PerfectDrive\Referable\Attributes\ReferableScope;
+
+// Laravel's #[Scope] attribute (Laravel 12+)
+#[Scope]
+#[ReferableScope]
+public function active(Builder $query): Builder
+{
+    return $query->where('active', true);
+}
+```
+Either of these will register the following route:
 ```
 GET /spa/referable/project_type/active
 ```

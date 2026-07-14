@@ -59,11 +59,25 @@ class ReferableServiceProvider extends PackageServiceProvider
                         ->map(fn (ReflectionAttribute $attribute) => $attribute->getName())
                         ->contains(ReferableScope::class),
                     )
-                    ->each(function ($method) use ($route, $middleware, $baseUrl) {
-                        $scopeRoute = Str::snake(Str::after($method->getName(), 'scope'));
+                    ->each(function (ReflectionMethod $method) use ($route, $middleware, $baseUrl) {
+                        $scopeRoute = self::scopeRouteName($method->getName());
                         Route::get($baseUrl.$route.'/'.$scopeRoute, ReferableController::class)
                             ->middleware($middleware);
                     });
             });
+    }
+
+    /**
+     * Resolve the public route segment for a scope method, stripping the legacy
+     * "scope" prefix when present. Methods using Laravel's #[Scope] attribute
+     * carry no prefix and are used as-is.
+     */
+    protected static function scopeRouteName(string $method): string
+    {
+        $name = Str::startsWith($method, 'scope') && ctype_upper(substr($method, 5, 1))
+            ? Str::after($method, 'scope')
+            : $method;
+
+        return Str::snake($name);
     }
 }
