@@ -2,6 +2,10 @@
 
 All notable changes to `referable` will be documented in this file.
 
+## 2.1.0 - 2026-07-14
+
+- Model scopes marked with `#[ReferableScope]` can now be defined using Laravel's native `#[Scope]` attribute in addition to the legacy `scopeActive` naming convention. Scopes are resolved through the model's `hasNamedScope()`, so both notations are fully supported and existing `scopeActive`-style scopes keep working unchanged.
+
 ## 2.0.1 - 2026-04-23
 
 - Fixed CI workflows (pint auto-commit and PHPStan PHP version)

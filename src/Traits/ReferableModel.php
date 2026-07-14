@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace PerfectDrive\Referable\Traits;
 
 use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 
 trait ReferableModel
 {
@@ -18,11 +17,13 @@ trait ReferableModel
             return collect();
         }
 
-        if ($scopeName && ! method_exists(self::class, 'scope'.Str::studly($scopeName))) {
+        $model = self::getModel();
+
+        // Resolve the scope through the model so both the legacy "scopeActive"
+        // naming convention and Laravel's #[Scope] attribute are supported.
+        if ($scopeName && ! $model->hasNamedScope($scopeName)) {
             $scopeName = null;
         }
-
-        $model = self::getModel();
 
         return $model
             ->orderBy(self::getReferenceSortBy())
